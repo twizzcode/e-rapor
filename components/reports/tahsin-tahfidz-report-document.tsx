@@ -59,7 +59,11 @@ export function TahsinTahfidzReportDocument({
                 value={semester === 2 ? "II (Two)" : "I (One)"}
               />
               <Identity label="Tahfidz Teacher" value={teacher.name} />
-              <Identity label="Level Category" value={student.levelCategory} />
+              <ChoiceLine
+                label="Level Category"
+                selected={student.levelCategory}
+                options={["Advanced", "Intermediate", "Basic"]}
+              />
             </ReportSection>
 
             <ReportSection title="Memorization Target (Based on Level)">
