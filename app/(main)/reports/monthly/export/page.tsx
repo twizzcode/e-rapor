@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { MonthlyReportDocument } from "@/components/reports/monthly-report-document"
-import { PrintButton } from "@/components/reports/print-button"
+import { ReportExportMenu } from "@/components/reports/report-export-menu"
 import { ReportLayoutEditor } from "@/components/reports/report-layout-editor"
 import { db } from "@/db"
 import {
@@ -19,7 +19,7 @@ import {
   user,
 } from "@/db/schema"
 import { getAcademicPeriodFromDate } from "@/lib/academic-period"
-import { createR2DownloadUrl } from "@/lib/r2"
+import { createR2DataUrl } from "@/lib/r2"
 
 const levels = ["Exceeding", "Meeting", "Developing", "Emerging"] as const
 
@@ -107,7 +107,7 @@ export default async function MonthlyReportExportPage({
   const signerMap = new Map(signers.map((row) => [row.id, row]))
   const [logoUrl, foundationLogoUrl, stampUrl] = await Promise.all(
     [school?.logoKey, school?.foundationLogoKey, school?.stampKey].map((key) =>
-      key ? createR2DownloadUrl(key, 3600) : null
+      key ? createR2DataUrl(key) : null
     )
   )
   const signerWithUrl = async (id: string | null | undefined) => {
@@ -117,7 +117,7 @@ export default async function MonthlyReportExportPage({
       name: signer.name,
       nip: signer.nip,
       signatureUrl: signer.signatureKey
-        ? await createR2DownloadUrl(signer.signatureKey, 3600)
+        ? await createR2DataUrl(signer.signatureKey)
         : null,
     }
   }
@@ -162,6 +162,7 @@ export default async function MonthlyReportExportPage({
     month: "long",
     year: "numeric",
   }).format(new Date(year, month - 1))
+  const periodLabel = `Monthly ${period}`
 
   return (
     <div className="monthly-report-export">
@@ -177,7 +178,12 @@ export default async function MonthlyReportExportPage({
         </div>
         <div className="flex items-center gap-2">
           <ReportLayoutEditor />
-          <PrintButton />
+          <ReportExportMenu
+            pageSelector=".monthly-report-page"
+            periodLabel={periodLabel}
+            grade={grade}
+            disabled={!reports.length}
+          />
         </div>
       </div>
       {reports.length ? (

@@ -85,3 +85,33 @@ export function createR2DownloadUrl(key: string, expiresIn = 300) {
     { expiresIn }
   )
 }
+
+export async function createR2DataUrl(key: string) {
+  const url = await createR2DownloadUrl(key, 300)
+  const response = await fetch(url)
+  if (!response.ok) return null
+
+  const contentType =
+    response.headers.get("content-type") ?? guessContentType(key)
+  const bytes = Buffer.from(await response.arrayBuffer())
+
+  return `data:${contentType};base64,${bytes.toString("base64")}`
+}
+
+function guessContentType(key: string) {
+  const extension = key.split(".").pop()?.toLowerCase()
+
+  switch (extension) {
+    case "png":
+      return "image/png"
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg"
+    case "webp":
+      return "image/webp"
+    case "svg":
+      return "image/svg+xml"
+    default:
+      return "application/octet-stream"
+  }
+}

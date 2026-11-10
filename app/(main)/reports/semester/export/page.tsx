@@ -2,7 +2,7 @@ import { and, asc, eq, inArray } from "drizzle-orm"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
-import { PrintButton } from "@/components/reports/print-button"
+import { ReportExportMenu } from "@/components/reports/report-export-menu"
 import { ReportLayoutEditor } from "@/components/reports/report-layout-editor"
 import { SemesterReportDocument } from "@/components/reports/semester-report-document"
 import { db } from "@/db"
@@ -23,7 +23,7 @@ import {
   getAcademicPeriodFromSemesterNumber,
   MAX_SEMESTER,
 } from "@/lib/academic-period"
-import { createR2DownloadUrl } from "@/lib/r2"
+import { createR2DataUrl } from "@/lib/r2"
 
 const levels = ["Exceeding", "Meeting", "Developing", "Emerging"] as const
 
@@ -114,7 +114,7 @@ export default async function SemesterReportExportPage({
   const signerMap = new Map(signers.map((row) => [row.id, row]))
   const [logoUrl, foundationLogoUrl, stampUrl] = await Promise.all(
     [school?.logoKey, school?.foundationLogoKey, school?.stampKey].map((key) =>
-      key ? createR2DownloadUrl(key, 3600) : null
+      key ? createR2DataUrl(key) : null
     )
   )
   const signerWithUrl = async (id: string | null | undefined) => {
@@ -124,7 +124,7 @@ export default async function SemesterReportExportPage({
       name: signer.name,
       nip: signer.nip,
       signatureUrl: signer.signatureKey
-        ? await createR2DownloadUrl(signer.signatureKey, 3600)
+        ? await createR2DataUrl(signer.signatureKey)
         : null,
     }
   }
@@ -166,6 +166,7 @@ export default async function SemesterReportExportPage({
     .filter(Boolean)
     .join(", ")
   const academicYear = formatAcademicYear(year)
+  const periodLabel = `Semester ${semesterNumber} ${academicYear}`
 
   return (
     <div className="monthly-report-export">
@@ -181,7 +182,12 @@ export default async function SemesterReportExportPage({
         </div>
         <div className="flex items-center gap-2">
           <ReportLayoutEditor />
-          <PrintButton />
+          <ReportExportMenu
+            pageSelector=".semester-report-page"
+            periodLabel={periodLabel}
+            grade={period.grade}
+            disabled={!reports.length}
+          />
         </div>
       </div>
       {reports.length ? (

@@ -45,7 +45,12 @@ export function TahsinTahfidzReportDocument({
       {students.map((student) => {
         const totalLines = totalTahfidzLines(student.weeks)
         return (
-          <article key={student.id} className="tahsin-report-page">
+          <article
+            key={student.id}
+            className="tahsin-report-page"
+            data-report-page
+            data-student-name={student.name}
+          >
             <h1>Tahsin &amp; Tahfidz Learning Report</h1>
 
             <ReportSection title="Student Identity">

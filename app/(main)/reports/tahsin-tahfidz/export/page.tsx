@@ -2,7 +2,7 @@ import { and, asc, eq } from "drizzle-orm"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
-import { PrintButton } from "@/components/reports/print-button"
+import { ReportExportMenu } from "@/components/reports/report-export-menu"
 import { ReportLayoutEditor } from "@/components/reports/report-layout-editor"
 import { TahsinTahfidzReportDocument } from "@/components/reports/tahsin-tahfidz-report-document"
 import { db } from "@/db"
@@ -18,7 +18,7 @@ import {
   getAcademicPeriodFromDate,
   getSemesterInYear,
 } from "@/lib/academic-period"
-import { createR2DownloadUrl } from "@/lib/r2"
+import { createR2DataUrl } from "@/lib/r2"
 
 export const metadata: Metadata = {
   title: "Tahsin Tahfidz Report Preview",
@@ -98,12 +98,13 @@ export default async function TahsinTahfidzExportPage({
   ).grade
   const tahfidzTeacher = teacherRow[0]
   const signatureUrl = tahfidzTeacher.signatureKey
-    ? await createR2DownloadUrl(tahfidzTeacher.signatureKey, 3600)
+    ? await createR2DataUrl(tahfidzTeacher.signatureKey)
     : null
   const period = new Intl.DateTimeFormat("en", {
     month: "long",
     year: "numeric",
   }).format(new Date(year, month - 1))
+  const periodLabel = `Tahsin Tahfidz ${period}`
 
   return (
     <div className="monthly-report-export tahsin-report-export">
@@ -119,7 +120,12 @@ export default async function TahsinTahfidzExportPage({
         </div>
         <div className="flex items-center gap-2">
           <ReportLayoutEditor mode="tahsin" />
-          <PrintButton />
+          <ReportExportMenu
+            pageSelector=".tahsin-report-page"
+            periodLabel={periodLabel}
+            grade={grade}
+            disabled={!reports.length}
+          />
         </div>
       </div>
       {reports.length ? (

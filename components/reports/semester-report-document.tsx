@@ -55,6 +55,8 @@ export function SemesterReportDocument({
         <article
           key={student.id}
           className="monthly-report-page semester-report-page"
+          data-report-page
+          data-student-name={student.name}
         >
           <header className="report-header">
             <ReportImage

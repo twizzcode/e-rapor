@@ -50,7 +50,12 @@ export function MonthlyReportDocument({
   return (
     <div className="monthly-report-document">
       {students.map((student) => (
-        <article key={student.id} className="monthly-report-page">
+        <article
+          key={student.id}
+          className="monthly-report-page"
+          data-report-page
+          data-student-name={student.name}
+        >
           <header className="report-header">
             <ReportImage
               src={school.foundationLogoUrl}
