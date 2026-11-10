@@ -20,13 +20,19 @@ import {
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 
-export function NavUser() {
+export function NavUser({
+  user,
+}: {
+  user: {
+    name: string
+    email: string
+    image: string | null
+  }
+}) {
   const router = useRouter()
   const { isMobile } = useSidebar()
-  const { data: session } = authClient.useSession()
-  const user = session?.user
   const initials =
-    user?.name
+    user.name
       .split(" ")
       .map((part) => part[0])
       .slice(0, 2)
@@ -49,14 +55,12 @@ export function NavUser() {
             }
           >
             <Avatar>
-              {user?.image && <AvatarImage src={user.image} alt={user.name} />}
+              {user.image && <AvatarImage src={user.image} alt={user.name} />}
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">
-                {user?.name ?? "User"}
-              </span>
-              <span className="truncate text-xs">{user?.email}</span>
+              <span className="truncate font-medium">{user.name}</span>
+              <span className="truncate text-xs">{user.email}</span>
             </div>
             <ChevronsUpDownIcon className="ml-auto size-4" />
           </DropdownMenuTrigger>
@@ -69,16 +73,14 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar>
-                  {user?.image && (
+                  {user.image && (
                     <AvatarImage src={user.image} alt={user.name} />
                   )}
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {user?.name ?? "User"}
-                  </span>
-                  <span className="truncate text-xs">{user?.email}</span>
+                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

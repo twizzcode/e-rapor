@@ -1,11 +1,10 @@
 import { eq } from "drizzle-orm"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 
 import { SchoolAssetsForm } from "@/components/school-assets-form"
 import { db } from "@/db"
 import { schoolProfile } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { createR2DownloadUrl } from "@/lib/r2"
 
 export const metadata: Metadata = {
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function SchoolAssetsPage() {
   const [session, profile] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
     db.query.schoolProfile.findFirst({
       columns: {
         logoKey: true,

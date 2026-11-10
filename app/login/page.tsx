@@ -1,10 +1,9 @@
-import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { SchoolIcon } from "lucide-react"
 import type { Metadata } from "next"
 
 import { LoginForm } from "@/components/login-form"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: "Login",
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 export default async function LoginPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
 
   if (session) redirect("/")
 

@@ -1,12 +1,11 @@
 import { eq } from "drizzle-orm"
-import { headers } from "next/headers"
 import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 
 import { StudentForm } from "@/components/students/student-form"
 import { db } from "@/db"
 import { student } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: "Edit Student",
@@ -20,7 +19,7 @@ export default async function EditStudentPage({
 }) {
   const [{ id }, session] = await Promise.all([
     params,
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
   ])
   if (session?.user.role !== "admin") redirect(`/students/${id}`)
 

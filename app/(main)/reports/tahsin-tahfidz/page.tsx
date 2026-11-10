@@ -1,5 +1,4 @@
 import { and, asc, eq } from "drizzle-orm"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 
 import { TahsinTahfidzWorkspace } from "@/components/reports/tahsin-tahfidz-workspace"
@@ -11,7 +10,7 @@ import {
   tahsinTahfidzReport,
   type TahsinTahfidzWeek,
 } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { getActiveTeacherOptions } from "@/lib/class-options"
 
 export const metadata: Metadata = {
@@ -32,7 +31,7 @@ export default async function TahsinTahfidzReportPage({
 }) {
   const [params, session, classes, teacherRows] = await Promise.all([
     searchParams,
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
     db
       .select({ id: classGroup.id, name: classGroup.name })
       .from(classGroup)

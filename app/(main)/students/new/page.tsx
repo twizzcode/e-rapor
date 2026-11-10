@@ -1,9 +1,8 @@
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
 import { StudentForm } from "@/components/students/student-form"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: "Add Student",
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 export default async function NewStudentPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (session?.user.role !== "admin") redirect("/students")
 
   return (

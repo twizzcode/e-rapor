@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { eq } from "drizzle-orm"
-import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 import { PencilIcon } from "lucide-react"
 import type { Metadata } from "next"
@@ -15,7 +14,7 @@ import {
 } from "@/components/ui/card"
 import { db } from "@/db"
 import { student } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: "Student Details",
@@ -29,7 +28,7 @@ export default async function StudentDetailPage({
 }) {
   const [{ id }, session] = await Promise.all([
     params,
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
   ])
   const row = await db.query.student.findFirst({ where: eq(student.id, id) })
   if (!row) notFound()

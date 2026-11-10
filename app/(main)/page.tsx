@@ -9,7 +9,6 @@ import {
   UsersIcon,
 } from "lucide-react"
 import { and, count, eq, isNull, or } from "drizzle-orm"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 
 import { buttonVariants } from "@/components/ui/button"
@@ -36,7 +35,7 @@ export const metadata: Metadata = {
   title: "Dashboard",
   description: "School report overview.",
 }
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { createR2DownloadUrl } from "@/lib/r2"
 
 export default async function DashboardPage() {
@@ -55,7 +54,7 @@ export default async function DashboardPage() {
     [monthlyReports],
     [semesterReports],
   ] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
     db.query.schoolProfile.findFirst({
       columns: { name: true, educationLevel: true, logoKey: true },
       where: eq(schoolProfile.id, "main"),

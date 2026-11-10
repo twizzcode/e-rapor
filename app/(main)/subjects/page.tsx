@@ -1,11 +1,10 @@
 import { asc } from "drizzle-orm"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 
 import { SubjectAssessmentGrid } from "@/components/subjects/subject-assessment-grid"
 import { db } from "@/db"
 import { assessmentDescriptor, subject } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: "Subjects",
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function SubjectsPage() {
   const [session, subjects, descriptors] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
     db.select().from(subject).orderBy(asc(subject.name)),
     db.select().from(assessmentDescriptor),
   ])

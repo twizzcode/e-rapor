@@ -1,5 +1,4 @@
 import { and, asc, eq } from "drizzle-orm"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 
 import { MonthlyReportGrid } from "@/components/reports/monthly-report-grid"
@@ -15,7 +14,7 @@ import {
   student,
   subject,
 } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export async function generateMetadata({
   searchParams,
@@ -45,7 +44,7 @@ export default async function InputScoresPage({
 }) {
   const [params, session] = await Promise.all([
     searchParams,
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
   ])
   const reportType = params.reportType === "semester" ? "semester" : "monthly"
   const month = validNumber(params.month, 1, 12, new Date().getMonth() + 1)

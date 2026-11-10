@@ -2,11 +2,10 @@
 
 import { and, eq, isNull, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import { schoolProfile, teacher, user } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export type SchoolProfileFormState = {
   error?: string
@@ -30,7 +29,7 @@ export async function saveSchoolProfile(
   _state: SchoolProfileFormState,
   formData: FormData
 ): Promise<SchoolProfileFormState> {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
 
   if (!session || session.user.role !== "admin") {
     return { error: "Only an admin can update the school profile." }

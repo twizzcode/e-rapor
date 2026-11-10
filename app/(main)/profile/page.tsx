@@ -1,5 +1,4 @@
 import { eq } from "drizzle-orm"
-import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import type { Metadata } from "next"
 
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/card"
 import { db } from "@/db"
 import { teacher } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { createR2DownloadUrl } from "@/lib/r2"
 
 export const metadata: Metadata = {
@@ -22,7 +21,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ProfilePage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (!session) redirect("/login")
 
   const teacherProfile = await db.query.teacher.findFirst({

@@ -5,7 +5,6 @@ import { randomUUID } from "node:crypto"
 import { and, eq, isNull, or } from "drizzle-orm"
 import type { BatchItem } from "drizzle-orm/batch"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import {
@@ -15,7 +14,7 @@ import {
   type TahsinTahfidzWeek,
   user,
 } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export type BulkTahsinTahfidzReportRow = {
   studentId: string
@@ -44,7 +43,7 @@ const overallPerformances = ["A", "B", "PB", ""]
 export async function saveTahsinTahfidzReports(
   input: BulkTahsinTahfidzReportInput
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (
     !session ||
     (session.user.role !== "teacher" && session.user.role !== "admin")

@@ -1,11 +1,10 @@
 import { asc, eq, or } from "drizzle-orm"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 
 import { TeacherDataGrid } from "@/components/teachers/teacher-data-grid"
 import { db } from "@/db"
 import { teacher, user } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: "Teachers",
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function TeachersPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   const rows = await db
     .select({
       id: user.id,

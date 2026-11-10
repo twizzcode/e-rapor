@@ -5,11 +5,10 @@ import { randomUUID } from "node:crypto"
 import type { BatchItem } from "drizzle-orm/batch"
 import { and, desc, eq, inArray, isNull, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import { classGroup, classMember, student, teacher, user } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export type ClassFormState = {
   error?: string
@@ -27,7 +26,7 @@ export type ClassGridRow = {
 }
 
 async function isAdmin() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   return session?.user.role === "admin"
 }
 

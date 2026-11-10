@@ -1,4 +1,3 @@
-import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { eq } from "drizzle-orm"
 
@@ -10,7 +9,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { db } from "@/db"
 import { schoolProfile, teacher } from "@/db/schema"
 
@@ -19,7 +18,7 @@ export default async function MainLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
 
   if (!session) redirect("/login")
 
@@ -45,6 +44,11 @@ export default async function MainLayout({
       <AppSidebar
         schoolName={school?.name ?? "SDII Cahaya Bangsa"}
         role={session.user.role === "admin" ? "Admin Teacher" : "Teacher"}
+        user={{
+          name: session.user.name,
+          email: session.user.email,
+          image: session.user.image ?? null,
+        }}
       />
       <SidebarInset>
         <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">

@@ -5,7 +5,6 @@ import { randomUUID } from "node:crypto"
 import { eq } from "drizzle-orm"
 import type { BatchItem } from "drizzle-orm/batch"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import {
@@ -14,7 +13,7 @@ import {
   semesterReport,
   subject,
 } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export type BulkSemesterReportRow = {
   studentId: string
@@ -33,7 +32,7 @@ export type BulkSemesterReportInput = {
 const levels = ["Exceeding", "Meeting", "Developing", "Emerging"]
 
 export async function saveSemesterReports(input: BulkSemesterReportInput) {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (
     !session ||
     (session.user.role !== "teacher" && session.user.role !== "admin")

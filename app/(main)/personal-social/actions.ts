@@ -3,11 +3,10 @@
 import type { BatchItem } from "drizzle-orm/batch"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import { personalSocialRubric } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export type PersonalSocialRow = {
   id: string
@@ -22,7 +21,7 @@ export async function savePersonalSocialRubric(
   rows: PersonalSocialRow[],
   deletedIds: string[]
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (!session || session.user.role !== "admin") {
     return { error: "Only an Admin Teacher can manage this rubric." }
   }

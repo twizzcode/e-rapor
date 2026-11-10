@@ -4,11 +4,10 @@ import { randomUUID } from "node:crypto"
 
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import { teacher, user } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { deleteR2Object, uploadR2Object } from "@/lib/r2"
 
 export type ProfileFormState = { error?: string; success?: string }
@@ -25,7 +24,7 @@ export async function saveProfile(
   _state: ProfileFormState,
   formData: FormData
 ): Promise<ProfileFormState> {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
 
   if (
     !session ||

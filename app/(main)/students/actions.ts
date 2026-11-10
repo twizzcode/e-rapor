@@ -6,11 +6,10 @@ import { eq } from "drizzle-orm"
 import { inArray } from "drizzle-orm"
 import type { BatchItem } from "drizzle-orm/batch"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import { student } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export type StudentFormState = {
   error?: string
@@ -58,7 +57,7 @@ export async function saveStudent(
   _state: StudentFormState,
   formData: FormData
 ): Promise<StudentFormState> {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (!session || session.user.role !== "admin") {
     return { error: "Only an Admin Teacher can save student data." }
   }
@@ -175,7 +174,7 @@ export async function saveStudents(
   inputRows: StudentGridRow[],
   deletedIds: string[]
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (!session || session.user.role !== "admin") {
     return { error: "Only an Admin Teacher can manage student data." }
   }

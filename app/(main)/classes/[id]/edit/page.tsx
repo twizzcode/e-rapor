@@ -1,12 +1,11 @@
 import { eq } from "drizzle-orm"
-import { headers } from "next/headers"
 import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 
 import { ClassForm } from "@/components/classes/class-form"
 import { db } from "@/db"
 import { classGroup } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { getActiveTeacherOptions } from "@/lib/class-options"
 
 export const metadata: Metadata = {
@@ -21,7 +20,7 @@ export default async function EditClassPage({
 }) {
   const [{ id }, session, teachers] = await Promise.all([
     params,
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
     getActiveTeacherOptions(),
   ])
   if (session?.user.role !== "admin") redirect(`/classes/${id}`)

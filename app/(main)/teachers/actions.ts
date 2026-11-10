@@ -2,11 +2,10 @@
 
 import { and, eq, inArray, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import { teacher, user } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export type TeacherRow = {
   id: string
@@ -21,7 +20,7 @@ export async function addTeacherByEmail(email: string): Promise<{
   success?: string
   teacher?: TeacherRow
 }> {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (!session || session.user.role !== "admin") {
     return { error: "Only an Admin Teacher can add teachers." }
   }
@@ -89,7 +88,7 @@ export async function addTeacherByEmail(email: string): Promise<{
 }
 
 export async function saveTeachers(rows: TeacherRow[], deletedIds: string[]) {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (!session || session.user.role !== "admin") {
     return { error: "Only an Admin Teacher can change teacher data." }
   }

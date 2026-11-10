@@ -3,11 +3,10 @@
 import type { BatchItem } from "drizzle-orm/batch"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import { assessmentDescriptor, subject } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export type SubjectAssessmentRow = {
   id: string
@@ -23,7 +22,7 @@ export async function saveSubjects(
   rows: SubjectAssessmentRow[],
   deletedSubjectIds: string[]
 ) {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (!session || session.user.role !== "admin") {
     return { error: "Only an Admin Teacher can manage subjects." }
   }

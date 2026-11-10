@@ -1,11 +1,10 @@
 import { and, asc, eq, isNull, or } from "drizzle-orm"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 
 import { SchoolProfileForm } from "@/components/school-profile-form"
 import { db } from "@/db"
 import { schoolProfile, teacher, user } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: "School Profile",
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function SchoolProfilePage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   const [profile, teachers] = await Promise.all([
     db.query.schoolProfile.findFirst({
       where: eq(schoolProfile.id, "main"),

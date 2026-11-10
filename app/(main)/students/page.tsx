@@ -1,11 +1,10 @@
 import { asc } from "drizzle-orm"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 
 import { StudentList } from "@/components/students/student-list"
 import { db } from "@/db"
 import { student } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: "Students",
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function StudentsPage() {
   const [session, students] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
     db.select().from(student).orderBy(asc(student.name)),
   ])
 

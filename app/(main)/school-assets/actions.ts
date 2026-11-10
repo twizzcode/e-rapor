@@ -4,11 +4,10 @@ import { randomUUID } from "node:crypto"
 
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
 
 import { db } from "@/db"
 import { schoolProfile } from "@/db/schema"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { deleteR2Object, uploadR2Object } from "@/lib/r2"
 
 export type SchoolAssetsFormState = { error?: string; success?: string }
@@ -41,7 +40,7 @@ export async function saveSchoolAssets(
   _state: SchoolAssetsFormState,
   formData: FormData
 ): Promise<SchoolAssetsFormState> {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
   if (!session || session.user.role !== "admin") {
     return { error: "Only an Admin Teacher can update school assets." }
   }

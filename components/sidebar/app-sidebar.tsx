@@ -97,10 +97,16 @@ const data = {
 export function AppSidebar({
   schoolName,
   role,
+  user,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   schoolName: string
   role: string
+  user: {
+    name: string
+    email: string
+    image: string | null
+  }
 }) {
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -127,7 +133,7 @@ export function AppSidebar({
         <NavMain label="Rapor" items={data.reports} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -1,9 +1,8 @@
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
 import { ClassForm } from "@/components/classes/class-form"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { getActiveTeacherOptions } from "@/lib/class-options"
 
 export const metadata: Metadata = {
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 
 export default async function NewClassPage() {
   const [session, teachers] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
     getActiveTeacherOptions(),
   ])
   if (session?.user.role !== "admin") redirect("/classes")

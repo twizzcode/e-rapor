@@ -1,4 +1,3 @@
-import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { ShieldXIcon } from "lucide-react"
 import { eq } from "drizzle-orm"
@@ -12,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { auth } from "@/lib/auth"
+import { getSession } from "@/lib/session"
 import { db } from "@/db"
 import { teacher } from "@/db/schema"
 
@@ -22,7 +21,7 @@ export const metadata: Metadata = {
 }
 
 export default async function AccessDeniedPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getSession()
 
   if (!session) redirect("/login")
 
