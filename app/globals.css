@@ -184,7 +184,7 @@
   box-sizing: border-box;
   width: 210mm;
   min-height: 297mm;
-  padding: 10mm 12mm;
+  padding: 20mm;
   background: white;
   color: #111827;
   box-shadow: 0 1px 8px rgb(0 0 0 / 12%);
@@ -432,7 +432,7 @@
   box-sizing: border-box;
   width: 210mm;
   min-height: 297mm;
-  padding: 14mm 18mm;
+  padding: 20mm;
   background: white;
   color: #111;
   box-shadow: 0 1px 8px rgb(0 0 0 / 12%);
