@@ -52,6 +52,10 @@ function isDate(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value))
 }
 
+function isNis(value: string) {
+  return value.length <= 30 && /^\d+(?:\.\d+)*$/.test(value)
+}
+
 export async function saveStudent(
   _state: StudentFormState,
   formData: FormData
@@ -94,8 +98,11 @@ export async function saveStudent(
   ) {
     return { error: "One or more fields exceed the character limit." }
   }
-  if ((nisn && !/^\d{4,20}$/.test(nisn)) || !/^\d{1,30}$/.test(nis)) {
-    return { error: "NIS must be numeric; NISN must be 4–20 digits if set." }
+  if ((nisn && !/^\d{4,20}$/.test(nisn)) || !isNis(nis)) {
+    return {
+      error:
+        "NIS may contain digits and dot separators; NISN must be 4–20 digits if set.",
+    }
   }
   if (
     (admissionDate && !isDate(admissionDate)) ||
@@ -202,7 +209,7 @@ export async function saveStudents(
       (row) =>
         !row.id ||
         row.id.length > 100 ||
-        !/^\d{1,30}$/.test(row.nis) ||
+        !isNis(row.nis) ||
         (row.nisn !== null && !/^\d{4,20}$/.test(row.nisn)) ||
         (row.gender !== null && !genders.includes(row.gender)) ||
         (row.birthPlace?.length ?? 0) > 100 ||

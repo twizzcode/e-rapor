@@ -153,7 +153,7 @@ export function StudentForm({ student }: { student?: StudentFormData }) {
             label="NIS"
             value={student?.nis}
             required
-            inputMode="numeric"
+            inputMode="decimal"
             maxLength={30}
           />
           <DateField
