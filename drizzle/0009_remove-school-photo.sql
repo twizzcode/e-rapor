@@ -1,0 +1,1 @@
+ALTER TABLE "school_profile" DROP COLUMN "school_photo_key";
