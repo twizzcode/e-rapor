@@ -425,6 +425,7 @@
 
 .tahsin-report-document {
   display: grid;
+  justify-items: center;
   gap: 1.5rem;
 }
 
