@@ -54,5 +54,8 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "patchedDependencies": {
+    "react-datasheet-grid@4.11.6": "patches/react-datasheet-grid@4.11.6.patch"
   }
 }

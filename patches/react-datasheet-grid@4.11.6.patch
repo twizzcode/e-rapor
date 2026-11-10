@@ -1,0 +1,15 @@
+diff --git a/dist/components/DataSheetGrid.js b/dist/components/DataSheetGrid.js
+index ec561f6812c13bb948f23aa6f48ad16cf114c74d..efbf2d150732dc7da55a9baba88acd2e78dbebd6 100644
+--- a/dist/components/DataSheetGrid.js
++++ b/dist/components/DataSheetGrid.js
+@@ -84,7 +84,9 @@ exports.DataSheetGrid = react_1.default.memo(react_1.default.forwardRef(({ value
+         refreshMode: 'throttle',
+         refreshRate: 100,
+     });
+-    setHeightDiff(height ? displayHeight - height : 0);
++    (0, react_1.useEffect)(() => {
++        setHeightDiff(height ? displayHeight - height : 0);
++    }, [displayHeight, height, setHeightDiff]);
+     const edges = (0, useEdges_1.useEdges)(outerRef, width, height);
+     const { fullWidth, totalWidth: contentWidth, columnWidths, columnRights, } = (0, useColumnWidths_1.useColumnWidths)(columns, width);
+     // x,y coordinates of the right click
