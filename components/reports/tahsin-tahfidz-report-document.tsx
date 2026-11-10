@@ -32,6 +32,7 @@ export function TahsinTahfidzReportDocument({
     targetAchievement: string
     overallPerformance: string
     teacherNotes: string
+    recommendation: string
     reportDate: string | null
   }[]
 }) {
@@ -135,6 +136,10 @@ export function TahsinTahfidzReportDocument({
 
             <ReportSection title="Teacher’s Notes (Tahsin & Tahfidz)">
               <p className="tahsin-notes">{student.teacherNotes || "—"}</p>
+              <p className="tahsin-recommendation">
+                <strong>Recommendations:</strong>{" "}
+                {student.recommendation || "—"}
+              </p>
             </ReportSection>
 
             <footer className="tahsin-report-footer">

@@ -65,6 +65,7 @@ type GridRow = {
   totalLines: number | null
   reportDate: string
   teacherNotes: string
+  recommendation: string
 }
 
 type Option = { id: string; name: string }
@@ -241,6 +242,9 @@ export function TahsinTahfidzWorkspace({
         teacherNotes:
           rowsById.get(student.studentId)?.teacherNotes.slice(0, 1200) ??
           student.teacherNotes,
+        recommendation:
+          rowsById.get(student.studentId)?.recommendation.slice(0, 1200) ??
+          student.recommendation,
       }))
     )
   }
@@ -254,6 +258,7 @@ export function TahsinTahfidzWorkspace({
         targetAchievement: student.targetAchievement,
         overallPerformance: student.overallPerformance,
         teacherNotes: student.teacherNotes,
+        recommendation: student.recommendation,
         reportDate: student.reportDate,
       }))
       const result = await saveTahsinTahfidzReports({
@@ -428,7 +433,7 @@ export function TahsinTahfidzWorkspace({
           {activeTab === "notes" && (
             <GridCard
               title="Teacher Notes"
-              description="Write Tahsin and Tahfidz progress notes for each student (maximum 1,200 characters)."
+              description="Write Tahsin and Tahfidz progress notes and recommendations for each student (maximum 1,200 characters each)."
             >
               <TahsinGrid
                 rows={toNotesRows(students)}
@@ -621,12 +626,13 @@ function summaryColumns(canManage: boolean): Column<GridRow>[] {
 function notesColumns(canManage: boolean): Column<GridRow>[] {
   return [
     studentColumn(),
-    textColumn("teacherNotes", "Teacher Notes", 800, canManage),
+    textColumn("teacherNotes", "Teacher Notes", 520, canManage),
+    textColumn("recommendation", "Recommendation", 520, canManage),
   ]
 }
 
 function textColumn(
-  key: "dateRange" | "reportDate" | "teacherNotes",
+  key: "dateRange" | "reportDate" | "teacherNotes" | "recommendation",
   title: string,
   minWidth: number,
   canManage: boolean
@@ -725,6 +731,7 @@ function blankGridRow(student: StudentReport): GridRow {
     totalLines: null,
     reportDate: "",
     teacherNotes: "",
+    recommendation: "",
   }
 }
 
@@ -750,5 +757,6 @@ function toNotesRows(students: StudentReport[]) {
   return students.map((student) => ({
     ...blankGridRow(student),
     teacherNotes: student.teacherNotes,
+    recommendation: student.recommendation,
   }))
 }

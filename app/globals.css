@@ -516,7 +516,14 @@
 }
 
 .tahsin-notes {
-  min-height: 27mm;
+  min-height: 18mm;
+  text-align: justify;
+  white-space: pre-wrap;
+}
+
+.tahsin-recommendation {
+  min-height: 9mm;
+  margin-top: 2mm;
   text-align: justify;
   white-space: pre-wrap;
 }

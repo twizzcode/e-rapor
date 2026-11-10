@@ -67,6 +67,7 @@ export default async function TahsinTahfidzReportPage({
             targetAchievement: tahsinTahfidzReport.targetAchievement,
             overallPerformance: tahsinTahfidzReport.overallPerformance,
             teacherNotes: tahsinTahfidzReport.teacherNotes,
+            recommendation: tahsinTahfidzReport.recommendation,
             reportDate: tahsinTahfidzReport.reportDate,
           })
           .from(classMember)
@@ -110,6 +111,7 @@ export default async function TahsinTahfidzReportPage({
           targetAchievement: row.targetAchievement ?? "",
           overallPerformance: row.overallPerformance ?? "",
           teacherNotes: row.teacherNotes ?? "",
+          recommendation: row.recommendation ?? "",
           reportDate: row.reportDate ?? "",
         }))}
         canManage={canManage}

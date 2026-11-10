@@ -23,6 +23,7 @@ export type BulkTahsinTahfidzReportRow = {
   targetAchievement: string
   overallPerformance: string
   teacherNotes: string
+  recommendation: string
   reportDate: string
 }
 
@@ -122,6 +123,7 @@ export async function saveTahsinTahfidzReports(
           targetAchievement: report.targetAchievement,
           overallPerformance: report.overallPerformance,
           teacherNotes: report.teacherNotes,
+          recommendation: report.recommendation,
           reportDate: report.reportDate || null,
         })
         .onConflictDoUpdate({
@@ -139,6 +141,7 @@ export async function saveTahsinTahfidzReports(
             targetAchievement: report.targetAchievement,
             overallPerformance: report.overallPerformance,
             teacherNotes: report.teacherNotes,
+            recommendation: report.recommendation,
             reportDate: report.reportDate || null,
             updatedAt: new Date(),
           },
@@ -168,6 +171,8 @@ function cleanReport(value: BulkTahsinTahfidzReportRow) {
     !overallPerformances.includes(value.overallPerformance) ||
     typeof value.teacherNotes !== "string" ||
     value.teacherNotes.trim().length > 1200 ||
+    typeof value.recommendation !== "string" ||
+    value.recommendation.trim().length > 1200 ||
     reportDate === null
   ) {
     return null
@@ -179,6 +184,7 @@ function cleanReport(value: BulkTahsinTahfidzReportRow) {
     targetAchievement: value.targetAchievement,
     overallPerformance: value.overallPerformance,
     teacherNotes: value.teacherNotes.trim(),
+    recommendation: value.recommendation.trim(),
     reportDate,
   }
 }

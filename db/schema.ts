@@ -337,6 +337,7 @@ export const tahsinTahfidzReport = pgTable(
     targetAchievement: text("target_achievement").notNull(),
     overallPerformance: text("overall_performance").notNull(),
     teacherNotes: text("teacher_notes").notNull(),
+    recommendation: text("recommendation").default("").notNull(),
     reportDate: date("report_date"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")

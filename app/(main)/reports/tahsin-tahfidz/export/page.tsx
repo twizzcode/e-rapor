@@ -73,6 +73,7 @@ export default async function TahsinTahfidzExportPage({
         targetAchievement: tahsinTahfidzReport.targetAchievement,
         overallPerformance: tahsinTahfidzReport.overallPerformance,
         teacherNotes: tahsinTahfidzReport.teacherNotes,
+        recommendation: tahsinTahfidzReport.recommendation,
         reportDate: tahsinTahfidzReport.reportDate,
       })
       .from(tahsinTahfidzReport)
@@ -148,6 +149,7 @@ export default async function TahsinTahfidzExportPage({
             targetAchievement: report.targetAchievement,
             overallPerformance: report.overallPerformance,
             teacherNotes: report.teacherNotes,
+            recommendation: report.recommendation,
             reportDate: report.reportDate,
           }))}
         />

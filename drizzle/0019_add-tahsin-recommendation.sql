@@ -1,0 +1,1 @@
+ALTER TABLE "tahsin_tahfidz_report" ADD COLUMN "recommendation" text DEFAULT '' NOT NULL;
