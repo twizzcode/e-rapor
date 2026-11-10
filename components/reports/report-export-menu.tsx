@@ -129,7 +129,7 @@ export function ReportExportMenu({
     <DropdownMenu>
       <DropdownMenuTrigger
         disabled={disabled || isBusy}
-        render={<Button variant="outline" />}
+        render={<Button variant="default" />}
       >
         {isBusy ? (
           <Loader2Icon className="animate-spin" />
