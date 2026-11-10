@@ -199,7 +199,19 @@
   align-items: center;
   min-height: 18mm;
   padding-bottom: 2mm;
-  border-bottom: 8px double #111827;
+  border-bottom: none;
+  background-image: linear-gradient(
+    to bottom,
+    #111827 0,
+    #111827 2px,
+    transparent 2px,
+    transparent 3px,
+    #111827 3px,
+    #111827 5px
+  );
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: 100% 5px;
   text-align: center;
 }
 
