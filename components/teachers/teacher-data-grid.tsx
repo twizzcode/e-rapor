@@ -168,7 +168,10 @@ const emailColumn: Column<Teacher> = {
   deleteValue: ({ rowData }) => rowData,
 }
 
-function ActionsCell({ rowData, deleteRow }: CellProps<Teacher>) {
+function ActionsCell({
+  rowData,
+  columnData,
+}: CellProps<Teacher, { removeTeacher: (id: string) => void }>) {
   const [open, setOpen] = React.useState(false)
 
   return (
@@ -195,7 +198,9 @@ function ActionsCell({ rowData, deleteRow }: CellProps<Teacher>) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancelButton>Cancel</AlertDialogCancelButton>
-            <AlertDialogActionButton onClick={deleteRow}>
+            <AlertDialogActionButton
+              onClick={() => columnData.removeTeacher(rowData.id)}
+            >
               Remove access
             </AlertDialogActionButton>
           </AlertDialogFooter>
@@ -205,8 +210,12 @@ function ActionsCell({ rowData, deleteRow }: CellProps<Teacher>) {
   )
 }
 
-const actionsColumn: Column<Teacher> = {
+const actionsColumn: Column<
+  Teacher,
+  { removeTeacher: (id: string) => void }
+> = {
   component: ActionsCell,
+  columnData: { removeTeacher: () => undefined },
   disableKeys: true,
   keepFocus: true,
   copyValue: () => null,
@@ -280,7 +289,17 @@ export function TeacherDataGrid({
   const [nextUrl, setNextUrl] = React.useState("")
   const dirty = serializeTeachers(teachers) !== savedSnapshot
   const displayedColumns = canManage
-    ? columns
+    ? columns.map((column, index) =>
+        index === columns.length - 1
+          ? {
+              ...column,
+              columnData: {
+                removeTeacher: (id: string) =>
+                  handleChange(teachers.filter((row) => row.id !== id)),
+              },
+            }
+          : column
+      )
     : columns.map((column, index) =>
         index === columns.length - 1
           ? readonlyActionsColumn
