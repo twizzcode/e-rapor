@@ -14,6 +14,11 @@ import {
   student,
   subject,
 } from "@/db/schema"
+import {
+  getAcademicPeriodFromDate,
+  getAcademicPeriodFromSemesterNumber,
+  MAX_SEMESTER,
+} from "@/lib/academic-period"
 import { getSession } from "@/lib/session"
 
 export async function generateMetadata({
@@ -42,25 +47,22 @@ export default async function InputScoresPage({
     year?: string
   }>
 }) {
-  const [params, session] = await Promise.all([
-    searchParams,
-    getSession(),
-  ])
+  const [params, session] = await Promise.all([searchParams, getSession()])
   const reportType = params.reportType === "semester" ? "semester" : "monthly"
   const month = validNumber(params.month, 1, 12, new Date().getMonth() + 1)
-  const semester =
-    reportType === "monthly"
-      ? month <= 6
-        ? 2
-        : 1
-      : params.semester === "2"
-        ? 2
-        : 1
   const year = validNumber(params.year, 2020, 2100, new Date().getFullYear())
+  const semesterNumber =
+    reportType === "semester"
+      ? validNumber(params.semester, 1, MAX_SEMESTER, 1)
+      : 0
   const classes = await db
-    .select({ id: classGroup.id, name: classGroup.name })
+    .select({
+      id: classGroup.id,
+      name: classGroup.name,
+      cohortYear: classGroup.cohortYear,
+    })
     .from(classGroup)
-    .orderBy(asc(classGroup.gradeLevel), asc(classGroup.name))
+    .orderBy(asc(classGroup.cohortYear), asc(classGroup.name))
   const selectedClass = classes.find((row) => row.id === params.classId)
 
   const [subjects, aspects] = selectedClass
@@ -97,7 +99,7 @@ export default async function InputScoresPage({
         classes={classes}
         initialReportType={reportType}
         initialClassId={selectedClass?.id ?? ""}
-        initialSemester={String(semester)}
+        initialSemester={String(semesterNumber)}
         initialMonth={String(month)}
         initialYear={String(year)}
       />
@@ -114,8 +116,7 @@ export default async function InputScoresPage({
       {selectedClass && reportType === "semester" && (
         <SemesterReports
           classGroup={selectedClass}
-          semester={semester}
-          year={year}
+          semesterNumber={semesterNumber}
           subjects={subjects}
           aspects={aspects}
           canManage={canManage}
@@ -132,7 +133,12 @@ async function MonthlyReports({
   subjects,
   aspects,
   canManage,
-}: Omit<ReportGridProps, "semester"> & { month: number }) {
+}: ReportGridProps & { month: number; year: number }) {
+  const { grade } = getAcademicPeriodFromDate(
+    selectedClass.cohortYear,
+    year,
+    month
+  )
   const rows = await db
     .select({
       id: student.id,
@@ -159,6 +165,7 @@ async function MonthlyReports({
     <MonthlyReportGrid
       key={`${selectedClass.id}-${month}-${year}`}
       classGroup={selectedClass}
+      grade={grade}
       month={month}
       year={year}
       students={rows.map((row) => ({
@@ -188,12 +195,15 @@ async function MonthlyReports({
 
 async function SemesterReports({
   classGroup: selectedClass,
-  semester,
-  year,
+  semesterNumber,
   subjects,
   aspects,
   canManage,
-}: ReportGridProps) {
+}: ReportGridProps & { semesterNumber: number }) {
+  const period = getAcademicPeriodFromSemesterNumber(
+    selectedClass.cohortYear,
+    semesterNumber
+  )
   const rows = await db
     .select({
       id: student.id,
@@ -209,8 +219,8 @@ async function SemesterReports({
       semesterReport,
       and(
         eq(semesterReport.studentId, student.id),
-        eq(semesterReport.semester, semester),
-        eq(semesterReport.year, year)
+        eq(semesterReport.semester, period.semesterInYear),
+        eq(semesterReport.year, period.academicYearStart)
       )
     )
     .where(eq(classMember.classId, selectedClass.id))
@@ -218,10 +228,12 @@ async function SemesterReports({
 
   return (
     <SemesterReportGrid
-      key={`${selectedClass.id}-${semester}-${year}`}
+      key={`${selectedClass.id}-${semesterNumber}`}
       classGroup={selectedClass}
-      semester={semester}
-      year={year}
+      semester={period.semesterInYear}
+      year={period.academicYearStart}
+      semesterNumber={semesterNumber}
+      grade={period.grade}
       students={rows.map((row) => ({
         studentId: row.id,
         name: row.name,
@@ -248,9 +260,7 @@ async function SemesterReports({
 }
 
 type ReportGridProps = {
-  classGroup: { id: string; name: string }
-  semester: number
-  year: number
+  classGroup: { id: string; name: string; cohortYear: number }
   subjects: { id: string; name: string }[]
   aspects: { id: string; name: string }[]
   canManage: boolean

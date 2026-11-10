@@ -19,7 +19,7 @@ export type ClassFormState = {
 export type ClassGridRow = {
   id: string
   name: string
-  gradeLevel: string
+  cohortYear: number
   homeroomTeacherId: string
   homeroomTeacher: string
   studentCount: number
@@ -40,13 +40,13 @@ export async function saveClass(
 
   const id = String(formData.get("id") ?? "").trim() || randomUUID()
   const name = String(formData.get("name") ?? "").trim()
-  const gradeLevel = Number(formData.get("gradeLevel"))
+  const cohortYear = Number(formData.get("cohortYear"))
   const homeroomTeacherId =
     String(formData.get("homeroomTeacherId") ?? "").trim() || null
 
   if (!name || name.length > 100) return { error: "Enter a valid class name." }
-  if (!Number.isInteger(gradeLevel) || gradeLevel < 1 || gradeLevel > 6) {
-    return { error: "Grade level must be between 1 and 6." }
+  if (!isValidCohortYear(cohortYear)) {
+    return { error: "Enter a valid cohort year between 2000 and 2100." }
   }
 
   if (homeroomTeacherId) {
@@ -75,13 +75,12 @@ export async function saveClass(
     if (existing) {
       await db
         .update(classGroup)
-        .set({ name, gradeLevel, homeroomTeacherId })
+        .set({ name, cohortYear, homeroomTeacherId })
         .where(eq(classGroup.id, id))
-      await syncClassStudentLabels(id, name, gradeLevel)
     } else {
       await db
         .insert(classGroup)
-        .values({ id, name, gradeLevel, homeroomTeacherId })
+        .values({ id, name, cohortYear, homeroomTeacherId })
     }
   } catch (error) {
     console.error("Failed to save class", error)
@@ -99,18 +98,7 @@ export async function deleteClass(id: string) {
   if (!id || id.length > 100) return { error: "Invalid class ID." }
 
   try {
-    const memberIds = await db
-      .select({ studentId: classMember.studentId })
-      .from(classMember)
-      .where(eq(classMember.classId, id))
-
     await db.delete(classGroup).where(eq(classGroup.id, id))
-    for (const member of memberIds) {
-      await db
-        .update(student)
-        .set({ gradeLevel: null, className: null })
-        .where(eq(student.id, member.studentId))
-    }
   } catch (error) {
     console.error("Failed to delete class", error)
     return { error: "Could not delete class." }
@@ -140,7 +128,7 @@ export async function saveClasses(
   const rows = inputRows.map((row) => ({
     id: cleanId(row.id),
     name: typeof row.name === "string" ? row.name.trim() : "",
-    gradeLevel: Number(row.gradeLevel),
+    cohortYear: Number(row.cohortYear),
     homeroomTeacherId: cleanId(row.homeroomTeacherId) || null,
     studentCount: Number(row.studentCount) || 0,
   }))
@@ -151,16 +139,14 @@ export async function saveClasses(
         !row.id ||
         !row.name ||
         row.name.length > 100 ||
-        !Number.isInteger(row.gradeLevel) ||
-        row.gradeLevel < 1 ||
-        row.gradeLevel > 6
+        !isValidCohortYear(row.cohortYear)
     ) ||
     normalizedDeletedIds.some((id) => !id) ||
     new Set(rows.map((row) => row.id)).size !== rows.length ||
     new Set(rows.map((row) => row.name.toLocaleLowerCase())).size !==
       rows.length
   ) {
-    return { error: "Enter valid, unique class names and grade levels 1–6." }
+    return { error: "Enter valid, unique class names and cohort years." }
   }
 
   const teacherIds = new Set(
@@ -186,12 +172,6 @@ export async function saveClasses(
   }
 
   try {
-    const deletedMembers = normalizedDeletedIds.length
-      ? await db
-          .select({ studentId: classMember.studentId })
-          .from(classMember)
-          .where(inArray(classMember.classId, normalizedDeletedIds))
-      : []
     const queries: BatchItem<"pg">[] = []
     for (const id of normalizedDeletedIds) {
       queries.push(db.delete(classGroup).where(eq(classGroup.id, id)))
@@ -203,14 +183,14 @@ export async function saveClasses(
           .values({
             id: row.id,
             name: row.name,
-            gradeLevel: row.gradeLevel,
+            cohortYear: row.cohortYear,
             homeroomTeacherId: row.homeroomTeacherId,
           })
           .onConflictDoUpdate({
             target: classGroup.id,
             set: {
               name: row.name,
-              gradeLevel: row.gradeLevel,
+              cohortYear: row.cohortYear,
               homeroomTeacherId: row.homeroomTeacherId,
               updatedAt: new Date(),
             },
@@ -219,20 +199,6 @@ export async function saveClasses(
     }
     if (queries.length) {
       await db.batch(queries as [BatchItem<"pg">, ...BatchItem<"pg">[]])
-    }
-    if (deletedMembers.length) {
-      await db
-        .update(student)
-        .set({ gradeLevel: null, className: null })
-        .where(
-          inArray(
-            student.id,
-            deletedMembers.map((row) => row.studentId)
-          )
-        )
-    }
-    for (const row of rows) {
-      await syncClassStudentLabels(row.id, row.name, row.gradeLevel)
     }
   } catch (error) {
     console.error("Failed to save classes", error)
@@ -245,7 +211,6 @@ export async function saveClasses(
     success: "Class data saved.",
     rows: rows.map((row) => ({
       ...row,
-      gradeLevel: String(row.gradeLevel),
       homeroomTeacher: "",
     })),
   }
@@ -294,22 +259,13 @@ export async function addClassMembers(classId: string, studentIds: string[]) {
   }
 
   try {
-    await db.batch([
-      db.insert(classMember).values(
-        normalizedStudentIds.map((studentId, index) => ({
-          classId,
-          studentId,
-          position: (lastMember[0]?.position ?? 0) + index + 1,
-        }))
-      ),
-      db
-        .update(student)
-        .set({
-          gradeLevel: String(targetClass.gradeLevel),
-          className: targetClass.name,
-        })
-        .where(inArray(student.id, normalizedStudentIds)),
-    ])
+    await db.insert(classMember).values(
+      normalizedStudentIds.map((studentId, index) => ({
+        classId,
+        studentId,
+        position: (lastMember[0]?.position ?? 0) + index + 1,
+      }))
+    )
   } catch (error) {
     console.error("Failed to add class members", error)
     return { error: "Could not add students. Refresh and try again." }
@@ -335,20 +291,14 @@ export async function removeClassMember(classId: string, studentId: string) {
   }
 
   try {
-    await db.batch([
-      db
-        .delete(classMember)
-        .where(
-          and(
-            eq(classMember.classId, classId),
-            eq(classMember.studentId, studentId)
-          )
-        ),
-      db
-        .update(student)
-        .set({ gradeLevel: null, className: null })
-        .where(eq(student.id, studentId)),
-    ])
+    await db
+      .delete(classMember)
+      .where(
+        and(
+          eq(classMember.classId, classId),
+          eq(classMember.studentId, studentId)
+        )
+      )
   } catch (error) {
     console.error("Failed to remove class member", error)
     return { error: "Could not remove student from class." }
@@ -356,24 +306,6 @@ export async function removeClassMember(classId: string, studentId: string) {
 
   revalidateClassPaths(classId)
   return { success: "Student removed from class." }
-}
-
-async function syncClassStudentLabels(
-  id: string,
-  name: string,
-  gradeLevel: number
-) {
-  const members = await db
-    .select({ studentId: classMember.studentId })
-    .from(classMember)
-    .where(eq(classMember.classId, id))
-
-  for (const member of members) {
-    await db
-      .update(student)
-      .set({ gradeLevel: String(gradeLevel), className: name })
-      .where(eq(student.id, member.studentId))
-  }
 }
 
 function revalidateClassPaths(id: string) {
@@ -386,4 +318,8 @@ function cleanId(value: unknown) {
   return typeof value === "string" && value.trim().length <= 100
     ? value.trim()
     : ""
+}
+
+function isValidCohortYear(value: number) {
+  return Number.isInteger(value) && value >= 2000 && value <= 2100
 }

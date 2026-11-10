@@ -12,6 +12,10 @@ import {
 } from "@/db/schema"
 import { getSession } from "@/lib/session"
 import { getActiveTeacherOptions } from "@/lib/class-options"
+import {
+  getAcademicPeriodFromDate,
+  getSemesterInYear,
+} from "@/lib/academic-period"
 
 export const metadata: Metadata = {
   title: "Tahsin Tahfidz Report",
@@ -24,7 +28,6 @@ export default async function TahsinTahfidzReportPage({
   searchParams: Promise<{
     classId?: string
     teacherId?: string
-    semester?: string
     month?: string
     year?: string
   }>
@@ -33,15 +36,22 @@ export default async function TahsinTahfidzReportPage({
     searchParams,
     getSession(),
     db
-      .select({ id: classGroup.id, name: classGroup.name })
+      .select({
+        id: classGroup.id,
+        name: classGroup.name,
+        cohortYear: classGroup.cohortYear,
+      })
       .from(classGroup)
-      .orderBy(asc(classGroup.gradeLevel), asc(classGroup.name)),
+      .orderBy(asc(classGroup.cohortYear), asc(classGroup.name)),
     getActiveTeacherOptions(),
   ])
   const month = validNumber(params.month, 1, 12, new Date().getMonth() + 1)
   const year = validNumber(params.year, 2020, 2100, new Date().getFullYear())
-  const semester = params.semester === "2" ? 2 : 1
+  const semester = getSemesterInYear(month)
   const selectedClass = classes.find((row) => row.id === params.classId)
+  const grade = selectedClass
+    ? getAcademicPeriodFromDate(selectedClass.cohortYear, year, month).grade
+    : 0
   const teachers = teacherRows.map((row) => ({ id: row.id, name: row.name }))
   const selectedTeacher = teachers.find((row) => row.id === params.teacherId)
 
@@ -89,6 +99,7 @@ export default async function TahsinTahfidzReportPage({
         initialSemester={String(semester)}
         initialMonth={String(month)}
         initialYear={String(year)}
+        initialGrade={grade}
         initialClassName={selectedClass?.name ?? ""}
         initialStudents={rows.map((row) => ({
           studentId: row.studentId,

@@ -18,7 +18,7 @@ export default async function ClassesPage() {
       .select({
         id: classGroup.id,
         name: classGroup.name,
-        gradeLevel: classGroup.gradeLevel,
+        cohortYear: classGroup.cohortYear,
         homeroomTeacherId: classGroup.homeroomTeacherId,
         homeroomTeacher: user.name,
         studentCount: count(classMember.studentId),
@@ -27,7 +27,7 @@ export default async function ClassesPage() {
       .leftJoin(user, eq(user.id, classGroup.homeroomTeacherId))
       .leftJoin(classMember, eq(classMember.classId, classGroup.id))
       .groupBy(classGroup.id, user.name)
-      .orderBy(asc(classGroup.gradeLevel), asc(classGroup.name)),
+      .orderBy(asc(classGroup.cohortYear), asc(classGroup.name)),
     db
       .select({ id: user.id, name: user.name })
       .from(user)
@@ -54,7 +54,6 @@ export default async function ClassesPage() {
       <ClassDataGrid
         initialClasses={classes.map((row) => ({
           ...row,
-          gradeLevel: String(row.gradeLevel),
           homeroomTeacherId: row.homeroomTeacherId ?? "",
           homeroomTeacher: row.homeroomTeacher ?? "",
         }))}

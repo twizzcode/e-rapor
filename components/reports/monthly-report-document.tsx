@@ -17,6 +17,7 @@ type Signer = {
 export function MonthlyReportDocument({
   school,
   classGroup,
+  grade,
   period,
   subjects,
   aspects,
@@ -31,7 +32,8 @@ export function MonthlyReportDocument({
     foundationLogoUrl: string | null
     stampUrl: string | null
   }
-  classGroup: { name: string; gradeLevel: number }
+  classGroup: { name: string }
+  grade: number
   period: string
   subjects: RubricItem[]
   aspects: RubricItem[]
@@ -74,7 +76,7 @@ export function MonthlyReportDocument({
             </div>
             <div>
               <dt>Grade</dt>
-              <dd>: {classGroup.gradeLevel}</dd>
+              <dd>: {grade}</dd>
             </div>
             <div>
               <dt>Class</dt>

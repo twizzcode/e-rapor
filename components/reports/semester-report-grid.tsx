@@ -44,6 +44,8 @@ export function SemesterReportGrid({
   classGroup,
   semester,
   year,
+  semesterNumber,
+  grade,
   students: initialStudents,
   subjects,
   aspects,
@@ -52,6 +54,8 @@ export function SemesterReportGrid({
   classGroup: { id: string; name: string }
   semester: number
   year: number
+  semesterNumber: number
+  grade: number
   students: StudentReport[]
   subjects: RubricItem[]
   aspects: RubricItem[]
@@ -215,8 +219,8 @@ export function SemesterReportGrid({
       <div>
         <h2 className="font-heading text-lg font-medium">{classGroup.name}</h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          Semester {semester} · Academic Year {academicYear} · {students.length}{" "}
-          students
+          Grade {grade} · Semester {semesterNumber} · Academic Year{" "}
+          {academicYear} · {students.length} students
         </p>
       </div>
 

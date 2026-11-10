@@ -18,6 +18,11 @@ import {
   teacher,
   user,
 } from "@/db/schema"
+import {
+  formatAcademicYear,
+  getAcademicPeriodFromSemesterNumber,
+  MAX_SEMESTER,
+} from "@/lib/academic-period"
 import { createR2DownloadUrl } from "@/lib/r2"
 
 const levels = ["Exceeding", "Meeting", "Developing", "Emerging"] as const
@@ -33,26 +38,31 @@ export default async function SemesterReportExportPage({
   searchParams: Promise<{
     classId?: string
     semester?: string
-    year?: string
   }>
 }) {
   const query = await searchParams
   const classId = cleanId(query.classId)
-  const semester = query.semester === "2" ? 2 : 1
-  const year = validNumber(query.year, 2020, 2100)
-  if (!classId || !year) notFound()
+  const semesterNumber = validNumber(query.semester, 1, MAX_SEMESTER)
+  if (!classId || !semesterNumber) notFound()
 
   const [classRow] = await db
     .select({
       id: classGroup.id,
       name: classGroup.name,
-      gradeLevel: classGroup.gradeLevel,
+      cohortYear: classGroup.cohortYear,
       homeroomTeacherId: classGroup.homeroomTeacherId,
     })
     .from(classGroup)
     .where(eq(classGroup.id, classId))
     .limit(1)
   if (!classRow) notFound()
+
+  const period = getAcademicPeriodFromSemesterNumber(
+    classRow.cohortYear,
+    semesterNumber
+  )
+  const semester = period.semesterInYear
+  const year = period.academicYearStart
 
   const [reports, subjects, descriptors, aspects, school] = await Promise.all([
     db
@@ -155,7 +165,7 @@ export default async function SemesterReportExportPage({
   ]
     .filter(Boolean)
     .join(", ")
-  const academicYear = `${year}/${year + 1}`
+  const academicYear = formatAcademicYear(year)
 
   return (
     <div className="monthly-report-export">
@@ -165,8 +175,8 @@ export default async function SemesterReportExportPage({
             Semester Report Export
           </h1>
           <p className="text-xs text-muted-foreground">
-            {classRow.name} · Semester {semester} · {academicYear} ·{" "}
-            {reports.length} students
+            {classRow.name} · Grade {period.grade} · Semester {semesterNumber} ·{" "}
+            {academicYear} · {reports.length} students
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -183,7 +193,7 @@ export default async function SemesterReportExportPage({
             foundationLogoUrl,
             stampUrl,
           }}
-          classGroup={classRow}
+          grade={period.grade}
           academicYear={academicYear}
           semester={semester}
           subjects={subjectRubrics}

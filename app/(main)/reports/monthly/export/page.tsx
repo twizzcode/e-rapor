@@ -18,6 +18,7 @@ import {
   teacher,
   user,
 } from "@/db/schema"
+import { getAcademicPeriodFromDate } from "@/lib/academic-period"
 import { createR2DownloadUrl } from "@/lib/r2"
 
 const levels = ["Exceeding", "Meeting", "Developing", "Emerging"] as const
@@ -46,13 +47,15 @@ export default async function MonthlyReportExportPage({
     .select({
       id: classGroup.id,
       name: classGroup.name,
-      gradeLevel: classGroup.gradeLevel,
+      cohortYear: classGroup.cohortYear,
       homeroomTeacherId: classGroup.homeroomTeacherId,
     })
     .from(classGroup)
     .where(eq(classGroup.id, classId))
     .limit(1)
   if (!classRow) notFound()
+
+  const { grade } = getAcademicPeriodFromDate(classRow.cohortYear, year, month)
 
   const [reports, subjects, descriptors, aspects, school] = await Promise.all([
     db
@@ -168,7 +171,8 @@ export default async function MonthlyReportExportPage({
             Monthly Report Export
           </h1>
           <p className="text-xs text-muted-foreground">
-            {classRow.name} · {period} · {reports.length} students
+            {classRow.name} · Grade {grade} · {period} · {reports.length}{" "}
+            students
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -186,6 +190,7 @@ export default async function MonthlyReportExportPage({
             stampUrl,
           }}
           classGroup={classRow}
+          grade={grade}
           period={period}
           subjects={subjectRubrics}
           aspects={aspectRubrics}

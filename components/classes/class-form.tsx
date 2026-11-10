@@ -16,12 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { getAcademicYearStart } from "@/lib/academic-period"
 
 type TeacherOption = { id: string; name: string; nip: string | null }
 type ClassData = {
   id: string
   name: string
-  gradeLevel: number
+  cohortYear: number
   homeroomTeacherId: string
 }
 
@@ -34,9 +35,11 @@ export function ClassForm({
 }) {
   const router = useRouter()
   const [state, action, pending] = React.useActionState(saveClass, {})
-  const [gradeLevel, setGradeLevel] = React.useState<string | null>(
-    classData ? String(classData.gradeLevel) : null
-  )
+  const [cohortYear, setCohortYear] = React.useState(() => {
+    if (classData) return String(classData.cohortYear)
+    const now = new Date()
+    return String(getAcademicYearStart(now.getFullYear(), now.getMonth() + 1))
+  })
   const [homeroomTeacherId, setHomeroomTeacherId] = React.useState<
     string | null
   >(classData?.homeroomTeacherId || null)
@@ -69,24 +72,21 @@ export function ClassForm({
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="gradeLevel">Grade level</FieldLabel>
-              <Select
-                name="gradeLevel"
-                value={gradeLevel}
-                onValueChange={setGradeLevel}
+              <FieldLabel htmlFor="cohortYear">Cohort year</FieldLabel>
+              <Input
+                id="cohortYear"
+                name="cohortYear"
+                type="number"
+                min={2000}
+                max={2100}
+                value={cohortYear}
+                onChange={(event) => setCohortYear(event.target.value)}
                 required
-              >
-                <SelectTrigger id="gradeLevel" className="w-full">
-                  <SelectValue placeholder="Select grade level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4, 5, 6].map((grade) => (
-                    <SelectItem key={grade} value={String(grade)}>
-                      Grade {grade}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
+              <p className="text-xs text-muted-foreground">
+                Year this class started grade 1. Grade and semester are
+                calculated from this and the report period.
+              </p>
             </Field>
             <Field className="sm:col-span-2">
               <FieldLabel htmlFor="homeroomTeacherId">

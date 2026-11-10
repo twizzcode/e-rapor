@@ -1,9 +1,9 @@
-import { asc } from "drizzle-orm"
+import { asc, eq } from "drizzle-orm"
 import type { Metadata } from "next"
 
 import { StudentList } from "@/components/students/student-list"
 import { db } from "@/db"
-import { student } from "@/db/schema"
+import { classGroup, classMember, student } from "@/db/schema"
 import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
@@ -14,7 +14,21 @@ export const metadata: Metadata = {
 export default async function StudentsPage() {
   const [session, students] = await Promise.all([
     getSession(),
-    db.select().from(student).orderBy(asc(student.name)),
+    db
+      .select({
+        id: student.id,
+        name: student.name,
+        nis: student.nis,
+        nisn: student.nisn,
+        gender: student.gender,
+        birthPlace: student.birthPlace,
+        birthDate: student.birthDate,
+        className: classGroup.name,
+      })
+      .from(student)
+      .leftJoin(classMember, eq(classMember.studentId, student.id))
+      .leftJoin(classGroup, eq(classGroup.id, classMember.classId))
+      .orderBy(asc(student.name)),
   ])
 
   return (
@@ -29,7 +43,6 @@ export default async function StudentsPage() {
           gender: row.gender ?? "",
           birthPlace: row.birthPlace ?? "",
           birthDate: row.birthDate ?? "",
-          gradeLevel: row.gradeLevel,
           className: row.className,
         }))}
       />

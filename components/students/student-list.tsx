@@ -273,13 +273,11 @@ export function StudentList({
   const [nextUrl, setNextUrl] = React.useState("")
   const [search, setSearch] = React.useState("")
   const [gender, setGender] = React.useState("")
-  const [gradeLevel, setGradeLevel] = React.useState("")
   const [className, setClassName] = React.useState("")
   const dirty = serializeRows(rows) !== serializeRows(savedRows)
   const deletedIds = savedRows
     .filter((saved) => !rows.some((row) => row.id === saved.id))
     .map((row) => row.id)
-  const gradeLevels = uniqueValues(rows.map((row) => row.gradeLevel))
   const classNames = uniqueValues(rows.map((row) => row.className))
   const normalizedSearch = search.trim().toLocaleLowerCase()
   const filteredRows = rows.filter(
@@ -289,10 +287,9 @@ export function StudentList({
           value.toLocaleLowerCase().includes(normalizedSearch)
         )) &&
       (!gender || row.gender === gender) &&
-      (!gradeLevel || row.gradeLevel === gradeLevel) &&
       (!className || row.className === className)
   )
-  const filtered = Boolean(search || gender || gradeLevel || className)
+  const filtered = Boolean(search || gender || className)
   const columns: Column<StudentGridRow>[] = [
     { ...numberColumn, title: "No.", minWidth: 52, maxWidth: 52 },
     { ...nameColumn, title: "Full Name", minWidth: 220 },
@@ -328,11 +325,6 @@ export function StudentList({
       title: "Birth Place / Date",
       minWidth: 260,
       disabled: !canManage,
-    },
-    {
-      ...readonlyColumn((row) => row.gradeLevel ?? ""),
-      title: "Grade Level",
-      minWidth: 120,
     },
     {
       ...readonlyColumn((row) => row.className ?? ""),
@@ -425,7 +417,6 @@ export function StudentList({
   function clearFilters() {
     setSearch("")
     setGender("")
-    setGradeLevel("")
     setClassName("")
   }
 
@@ -460,7 +451,7 @@ export function StudentList({
           )}
         </CardHeader>
         <CardContent className="px-0">
-          <div className="grid gap-2 border-b px-4 py-3 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_160px_160px_180px_auto]">
+          <div className="grid gap-2 border-b px-4 py-3 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_160px_180px_auto]">
             <div className="relative">
               <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -476,12 +467,6 @@ export function StudentList({
               value={gender}
               onChange={setGender}
               options={genderOptions}
-            />
-            <FilterSelect
-              label="Grade Level"
-              value={gradeLevel}
-              onChange={setGradeLevel}
-              options={gradeLevels.map((value) => ({ label: value, value }))}
             />
             <FilterSelect
               label="Class"

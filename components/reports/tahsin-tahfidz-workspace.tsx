@@ -93,6 +93,7 @@ export function TahsinTahfidzWorkspace({
   initialSemester,
   initialMonth,
   initialYear,
+  initialGrade,
   initialClassName,
   initialStudents,
   canManage,
@@ -104,6 +105,7 @@ export function TahsinTahfidzWorkspace({
   initialSemester: string
   initialMonth: string
   initialYear: string
+  initialGrade: number
   initialClassName: string
   initialStudents: StudentReport[]
   canManage: boolean
@@ -111,7 +113,6 @@ export function TahsinTahfidzWorkspace({
   const router = useRouter()
   const [classId, setClassId] = React.useState(initialClassId)
   const [teacherId, setTeacherId] = React.useState(initialTeacherId)
-  const [semester, setSemester] = React.useState(initialSemester)
   const [month, setMonth] = React.useState(initialMonth)
   const [year, setYear] = React.useState(initialYear)
   const [students, setStudents] = React.useState(initialStudents)
@@ -173,7 +174,6 @@ export function TahsinTahfidzWorkspace({
     const params = new URLSearchParams({
       classId,
       teacherId,
-      semester,
       month,
       year,
     })
@@ -304,12 +304,13 @@ export function TahsinTahfidzWorkspace({
         <CardHeader className="border-b">
           <CardTitle>Report Setup</CardTitle>
           <CardDescription>
-            Choose class, month, year, semester, and Tahfidz teacher.
+            Choose class, month, year, and Tahfidz teacher. Grade and semester
+            are calculated from the class cohort and report month.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={applyFilters}>
-            <FieldGroup className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <FieldGroup className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <SetupSelect label="Class" value={classId} onChange={setClassId}>
                 {classes.map((option) => (
                   <SelectItem key={option.id} value={option.id}>
@@ -332,14 +333,6 @@ export function TahsinTahfidzWorkspace({
                 ))}
               </SetupSelect>
               <SetupSelect
-                label="Semester"
-                value={semester}
-                onChange={setSemester}
-              >
-                <SelectItem value="1">Semester 1</SelectItem>
-                <SelectItem value="2">Semester 2</SelectItem>
-              </SetupSelect>
-              <SetupSelect
                 label="Tahfidz Teacher"
                 value={teacherId}
                 onChange={setTeacherId}
@@ -350,7 +343,7 @@ export function TahsinTahfidzWorkspace({
                   </SelectItem>
                 ))}
               </SetupSelect>
-              <div className="flex gap-2 sm:col-span-2 xl:col-span-5">
+              <div className="flex gap-2 sm:col-span-2 xl:col-span-4">
                 <Button type="submit" disabled={!classId || !teacherId}>
                   Show input table
                 </Button>
@@ -376,7 +369,8 @@ export function TahsinTahfidzWorkspace({
               {initialClassName}
             </h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              {period} · Semester {initialSemester} · {students.length} students
+              Grade {initialGrade || "—"} · {period} · Semester{" "}
+              {initialSemester} · {students.length} students
             </p>
           </div>
           <div

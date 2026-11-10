@@ -11,13 +11,15 @@ type Signer = {
 
 export function TahsinTahfidzReportDocument({
   classGroup,
+  grade,
   teacher,
   semester,
   month,
   year,
   students,
 }: {
-  classGroup: { name: string; gradeLevel: number }
+  classGroup: { name: string }
+  grade: number
   teacher: Signer
   semester: number
   month: number
@@ -50,7 +52,7 @@ export function TahsinTahfidzReportDocument({
               <Identity label="Student Name" value={student.name} />
               <Identity
                 label="Class/Grade"
-                value={`${classGroup.name} / ${classGroup.gradeLevel}`}
+                value={`${classGroup.name} / ${grade}`}
               />
               <Identity
                 label="Semester"

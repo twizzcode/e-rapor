@@ -30,6 +30,7 @@ type RubricItem = { id: string; name: string }
 
 export function MonthlyReportGrid({
   classGroup,
+  grade,
   month,
   year,
   students: initialStudents,
@@ -38,6 +39,7 @@ export function MonthlyReportGrid({
   canManage,
 }: {
   classGroup: { id: string; name: string }
+  grade: number
   month: number
   year: number
   students: StudentReport[]
@@ -165,7 +167,7 @@ export function MonthlyReportGrid({
       <div>
         <h2 className="font-heading text-lg font-medium">{classGroup.name}</h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          {period} · {students.length} students
+          Grade {grade} · {period} · {students.length} students
         </p>
       </div>
 

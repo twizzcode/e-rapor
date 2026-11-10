@@ -16,7 +16,7 @@ type Signer = {
 
 export function SemesterReportDocument({
   school,
-  classGroup,
+  grade,
   academicYear,
   semester,
   subjects,
@@ -32,7 +32,7 @@ export function SemesterReportDocument({
     foundationLogoUrl: string | null
     stampUrl: string | null
   }
-  classGroup: { name: string; gradeLevel: number }
+  grade: number
   academicYear: string
   semester: number
   subjects: RubricItem[]
@@ -81,7 +81,7 @@ export function SemesterReportDocument({
             </div>
             <div>
               <dt>Grade</dt>
-              <dd>: {classGroup.gradeLevel}</dd>
+              <dd>: {grade}</dd>
             </div>
             <div>
               <dt>Period</dt>

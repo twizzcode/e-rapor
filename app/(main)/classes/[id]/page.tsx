@@ -27,16 +27,13 @@ export default async function ClassDetailPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  const [{ id }, session] = await Promise.all([
-    params,
-    getSession(),
-  ])
+  const [{ id }, session] = await Promise.all([params, getSession()])
 
   const [row] = await db
     .select({
       id: classGroup.id,
       name: classGroup.name,
-      gradeLevel: classGroup.gradeLevel,
+      cohortYear: classGroup.cohortYear,
       homeroomTeacher: user.name,
     })
     .from(classGroup)
@@ -97,7 +94,7 @@ export default async function ClassDetailPage({
         </CardHeader>
         <CardContent className="grid gap-5 sm:grid-cols-3">
           <Detail label="Class name" value={row.name} />
-          <Detail label="Grade level" value={`Grade ${row.gradeLevel}`} />
+          <Detail label="Cohort year" value={String(row.cohortYear)} />
           <Detail label="Homeroom teacher" value={row.homeroomTeacher} />
         </CardContent>
       </Card>

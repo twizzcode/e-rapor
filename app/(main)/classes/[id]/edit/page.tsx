@@ -45,7 +45,7 @@ export default async function EditClassPage({
         classData={{
           id: row.id,
           name: row.name,
-          gradeLevel: row.gradeLevel,
+          cohortYear: row.cohortYear,
           homeroomTeacherId: row.homeroomTeacherId ?? "",
         }}
       />

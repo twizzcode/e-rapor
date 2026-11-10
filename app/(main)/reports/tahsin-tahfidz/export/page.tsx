@@ -14,6 +14,10 @@ import {
   teacher,
   user,
 } from "@/db/schema"
+import {
+  getAcademicPeriodFromDate,
+  getSemesterInYear,
+} from "@/lib/academic-period"
 import { createR2DownloadUrl } from "@/lib/r2"
 
 export const metadata: Metadata = {
@@ -27,7 +31,6 @@ export default async function TahsinTahfidzExportPage({
   searchParams: Promise<{
     classId?: string
     teacherId?: string
-    semester?: string
     month?: string
     year?: string
   }>
@@ -35,17 +38,17 @@ export default async function TahsinTahfidzExportPage({
   const query = await searchParams
   const classId = cleanId(query.classId)
   const teacherId = cleanId(query.teacherId)
-  const semester = query.semester === "2" ? 2 : 1
   const month = validNumber(query.month, 1, 12)
   const year = validNumber(query.year, 2020, 2100)
   if (!classId || !teacherId || !month || !year) notFound()
+  const semester = getSemesterInYear(month)
 
   const [classRow, teacherRow, reports] = await Promise.all([
     db
       .select({
         id: classGroup.id,
         name: classGroup.name,
-        gradeLevel: classGroup.gradeLevel,
+        cohortYear: classGroup.cohortYear,
       })
       .from(classGroup)
       .where(eq(classGroup.id, classId))
@@ -88,6 +91,11 @@ export default async function TahsinTahfidzExportPage({
   ])
   if (!classRow[0] || !teacherRow[0]) notFound()
 
+  const grade = getAcademicPeriodFromDate(
+    classRow[0].cohortYear,
+    year,
+    month
+  ).grade
   const tahfidzTeacher = teacherRow[0]
   const signatureUrl = tahfidzTeacher.signatureKey
     ? await createR2DownloadUrl(tahfidzTeacher.signatureKey, 3600)
@@ -105,8 +113,8 @@ export default async function TahsinTahfidzExportPage({
             Tahsin Tahfidz Report Export
           </h1>
           <p className="text-xs text-muted-foreground">
-            {classRow[0].name} · {period} · Semester {semester} ·{" "}
-            {reports.length} students
+            {classRow[0].name} · Grade {grade} · {period} · Semester {semester}{" "}
+            · {reports.length} students
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -117,6 +125,7 @@ export default async function TahsinTahfidzExportPage({
       {reports.length ? (
         <TahsinTahfidzReportDocument
           classGroup={classRow[0]}
+          grade={grade}
           teacher={{
             name: tahfidzTeacher.name,
             nip: tahfidzTeacher.nip,

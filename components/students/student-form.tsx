@@ -60,8 +60,6 @@ export type StudentFormData = {
   childOrder: string
   previousSchool: string
   admittedClass: string
-  gradeLevel: string
-  className: string
   guardianName: string
   studentPhone: string
 }
@@ -261,7 +259,7 @@ export function StudentForm({ student }: { student?: StudentFormData }) {
       <FormCard
         icon={GraduationCapIcon}
         title="Enrollment"
-        description="Previous school and current placement."
+        description="Previous school and admission details."
       >
         <FieldGroup className="grid gap-5 sm:grid-cols-2">
           <TextField
@@ -274,12 +272,6 @@ export function StudentForm({ student }: { student?: StudentFormData }) {
             label="Admitted to class"
             value={student?.admittedClass}
           />
-          <TextField
-            id="gradeLevel"
-            label="Grade level"
-            value={student?.gradeLevel}
-          />
-          <TextField id="className" label="Class" value={student?.className} />
         </FieldGroup>
       </FormCard>
 

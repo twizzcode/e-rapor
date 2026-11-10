@@ -120,6 +120,20 @@
       "when": 1794294622787,
       "tag": "0016_add-tahsin-tahfidz-reports",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794310015364,
+      "tag": "0017_add_class_cohort_year",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794310047791,
+      "tag": "0018_remove_legacy_class_grade",
+      "breakpoints": true
     }
   ]
 }

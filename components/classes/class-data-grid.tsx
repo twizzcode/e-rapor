@@ -7,6 +7,7 @@ import {
   type Column,
   createTextColumn,
   DataSheetGrid,
+  intColumn,
   keyColumn,
 } from "react-datasheet-grid"
 import { EyeIcon, PlusIcon, Trash2Icon } from "lucide-react"
@@ -22,9 +23,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { getAcademicYearStart } from "@/lib/academic-period"
 
 type Option = { label: string; value: string }
 type SelectData = { options: Option[]; emptyLabel?: string }
+
+const cohortYearColumn = intColumn as unknown as Column<number>
 
 export function ClassDataGrid({
   initialClasses,
@@ -57,16 +61,8 @@ export function ClassDataGrid({
       disabled: !canManage,
     },
     {
-      ...keyColumn<ClassGridRow, "gradeLevel">(
-        "gradeLevel",
-        selectColumn({
-          options: [1, 2, 3, 4, 5, 6].map((grade) => ({
-            value: String(grade),
-            label: `Grade ${grade}`,
-          })),
-        })
-      ),
-      title: "Grade Level",
+      ...keyColumn<ClassGridRow, "cohortYear">("cohortYear", cohortYearColumn),
+      title: "Cohort Year",
       minWidth: 130,
       disabled: !canManage,
     },
@@ -110,12 +106,13 @@ export function ClassDataGrid({
     let name = "New Class"
     let suffix = 2
     while (names.has(name)) name = `New Class ${suffix++}`
+    const now = new Date()
     setRows((current) => [
       ...current,
       {
         id: crypto.randomUUID(),
         name,
-        gradeLevel: "1",
+        cohortYear: getAcademicYearStart(now.getFullYear(), now.getMonth() + 1),
         homeroomTeacherId: "",
         homeroomTeacher: "",
         studentCount: 0,

@@ -157,8 +157,6 @@ export const student = pgTable("student", {
   childOrder: integer("child_order"),
   previousSchool: text("previous_school"),
   admittedClass: text("admitted_class"),
-  gradeLevel: text("grade_level"),
-  className: text("class_name"),
   guardianName: text("guardian_name"),
   studentPhone: text("student_phone"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -171,7 +169,7 @@ export const student = pgTable("student", {
 export const classGroup = pgTable("class_group", {
   id: text("id").primaryKey(),
   name: text("name").notNull().unique(),
-  gradeLevel: integer("grade_level").notNull(),
+  cohortYear: integer("cohort_year").notNull(),
   homeroomTeacherId: text("homeroom_teacher_id").references(() => user.id, {
     onDelete: "set null",
   }),

@@ -17,10 +17,7 @@ export default async function EditStudentPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  const [{ id }, session] = await Promise.all([
-    params,
-    getSession(),
-  ])
+  const [{ id }, session] = await Promise.all([params, getSession()])
   if (session?.user.role !== "admin") redirect(`/students/${id}`)
 
   const row = await db.query.student.findFirst({ where: eq(student.id, id) })
@@ -49,8 +46,6 @@ export default async function EditStudentPage({
           childOrder: row.childOrder?.toString() ?? "",
           previousSchool: row.previousSchool ?? "",
           admittedClass: row.admittedClass ?? "",
-          gradeLevel: row.gradeLevel ?? "",
-          className: row.className ?? "",
           guardianName: row.guardianName ?? "",
           studentPhone: row.studentPhone ?? "",
         }}

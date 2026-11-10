@@ -20,6 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  getAcademicPeriodFromSemesterNumber,
+  MAX_SEMESTER,
+} from "@/lib/academic-period"
 
 const months = [
   "January",
@@ -44,7 +48,7 @@ export function ReportFilters({
   initialMonth,
   initialYear,
 }: {
-  classes: { id: string; name: string }[]
+  classes: { id: string; name: string; cohortYear: number }[]
   initialReportType: "monthly" | "semester"
   initialClassId: string
   initialSemester: string
@@ -56,6 +60,24 @@ export function ReportFilters({
   const [semester, setSemester] = React.useState(initialSemester)
   const [month, setMonth] = React.useState(initialMonth)
   const [year, setYear] = React.useState(initialYear)
+  const selectedClass = classes.find((row) => row.id === classId)
+  const semesterOptions = Array.from({ length: MAX_SEMESTER }, (_, index) => {
+    const semesterNumber = index + 1
+    if (!selectedClass) {
+      return {
+        value: String(semesterNumber),
+        label: `Semester ${semesterNumber}`,
+      }
+    }
+    const period = getAcademicPeriodFromSemesterNumber(
+      selectedClass.cohortYear,
+      semesterNumber
+    )
+    return {
+      value: String(semesterNumber),
+      label: `Semester ${semesterNumber} — Grade ${period.grade}, Semester ${period.semesterInYear}`,
+    }
+  })
 
   function applyFilters(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -63,10 +85,13 @@ export function ReportFilters({
     const params = new URLSearchParams({
       reportType: initialReportType,
       classId,
-      year,
     })
-    if (initialReportType === "monthly") params.set("month", month)
-    else params.set("semester", semester)
+    if (initialReportType === "monthly") {
+      params.set("month", month)
+      params.set("year", year)
+    } else {
+      params.set("semester", semester)
+    }
     router.push(`/input-scores?${params}`)
   }
 
@@ -75,7 +100,7 @@ export function ReportFilters({
     const path =
       initialReportType === "monthly"
         ? `/reports/monthly/export?${new URLSearchParams({ classId, month, year })}`
-        : `/reports/semester/export?${new URLSearchParams({ classId, semester, year })}`
+        : `/reports/semester/export?${new URLSearchParams({ classId, semester })}`
     router.push(path)
   }
 
@@ -86,7 +111,7 @@ export function ReportFilters({
         <CardDescription>
           {initialReportType === "monthly"
             ? "Choose class, month, and year to input or export reports."
-            : "Choose class, semester, and academic year to input or export reports."}
+            : "Choose class and semester to input or export reports. Grade and academic year are calculated from the class cohort."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -121,8 +146,11 @@ export function ReportFilters({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Semester 1</SelectItem>
-                    <SelectItem value="2">Semester 2</SelectItem>
+                    {semesterOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </Field>
@@ -147,28 +175,26 @@ export function ReportFilters({
                 </Select>
               </Field>
             )}
-            <Field>
-              <FieldLabel htmlFor="year">
-                {initialReportType === "semester"
-                  ? "Academic year starts"
-                  : "Year"}
-              </FieldLabel>
-              <Select
-                value={year}
-                onValueChange={(value) => value && setYear(value)}
-              >
-                <SelectTrigger id="year" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[2025, 2026, 2027, 2028].map((option) => (
-                    <SelectItem key={option} value={String(option)}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
+            {initialReportType === "monthly" && (
+              <Field>
+                <FieldLabel htmlFor="year">Year</FieldLabel>
+                <Select
+                  value={year}
+                  onValueChange={(value) => value && setYear(value)}
+                >
+                  <SelectTrigger id="year" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[2025, 2026, 2027, 2028].map((option) => (
+                      <SelectItem key={option} value={String(option)}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            )}
             <div className="flex gap-2 sm:col-span-2 xl:col-span-3">
               <Button type="submit" disabled={!classId}>
                 Show input table

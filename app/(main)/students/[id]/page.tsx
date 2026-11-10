@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { db } from "@/db"
-import { student } from "@/db/schema"
+import { classGroup, classMember, student } from "@/db/schema"
 import { getSession } from "@/lib/session"
 
 export const metadata: Metadata = {
@@ -26,11 +26,16 @@ export default async function StudentDetailPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  const [{ id }, session] = await Promise.all([
-    params,
-    getSession(),
+  const [{ id }, session] = await Promise.all([params, getSession()])
+  const [row, membership] = await Promise.all([
+    db.query.student.findFirst({ where: eq(student.id, id) }),
+    db
+      .select({ className: classGroup.name })
+      .from(classMember)
+      .innerJoin(classGroup, eq(classGroup.id, classMember.classId))
+      .where(eq(classMember.studentId, id))
+      .limit(1),
   ])
-  const row = await db.query.student.findFirst({ where: eq(student.id, id) })
   if (!row) notFound()
 
   return (
@@ -95,8 +100,7 @@ export default async function StudentDetailPage({
           <Detail label="Child order" value={row.childOrder?.toString()} />
           <Detail label="Previous school" value={row.previousSchool} />
           <Detail label="Admitted to class" value={row.admittedClass} />
-          <Detail label="Grade level" value={row.gradeLevel} />
-          <Detail label="Class" value={row.className} />
+          <Detail label="Class" value={membership[0]?.className} />
           <Detail label="Guardian name" value={row.guardianName} />
           <Detail label="Student phone number" value={row.studentPhone} />
         </CardContent>

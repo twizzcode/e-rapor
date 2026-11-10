@@ -37,7 +37,6 @@ export type StudentGridRow = {
   gender: string
   birthPlace: string
   birthDate: string
-  gradeLevel: string | null
   className: string | null
 }
 
@@ -143,8 +142,6 @@ export async function saveStudent(
     childOrder,
     previousSchool: optionalText(formData, "previousSchool"),
     admittedClass: optionalText(formData, "admittedClass"),
-    gradeLevel: optionalText(formData, "gradeLevel"),
-    className: optionalText(formData, "className"),
     guardianName,
     studentPhone: optionalText(formData, "studentPhone"),
   }
