@@ -199,7 +199,7 @@
   align-items: center;
   min-height: 18mm;
   padding-bottom: 2mm;
-  border-bottom: 1.5px solid #111827;
+  border-bottom: 4px double #111827;
   text-align: center;
 }
 
