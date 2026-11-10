@@ -1,129 +1,595 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "react-datasheet-grid/dist/style.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.488 0.243 264.376);
-    --primary-foreground: oklch(0.97 0.014 254.604);
-    --secondary: oklch(0.967 0.001 286.375);
-    --secondary-foreground: oklch(0.21 0.006 285.885);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.546 0.245 262.881);
-    --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.488 0.243 264.376);
+  --primary-foreground: oklch(0.97 0.014 254.604);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.546 0.245 262.881);
+  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.424 0.199 265.638);
-    --primary-foreground: oklch(0.97 0.014 254.604);
-    --secondary: oklch(0.274 0.006 286.033);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.623 0.214 259.815);
-    --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.424 0.199 265.638);
+  --primary-foreground: oklch(0.97 0.014 254.604);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.623 0.214 259.815);
+  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+  }
   html {
     @apply font-sans;
-    }
+  }
+}
+
+.teacher-grid {
+  --dsg-border-color: var(--border);
+  --dsg-selection-border-color: var(--primary);
+  --dsg-selection-background-color: color-mix(
+    in oklch,
+    var(--primary) 8%,
+    transparent
+  );
+  --dsg-header-text-color: var(--muted-foreground);
+  --dsg-header-active-text-color: var(--foreground);
+  --dsg-cell-background-color: var(--background);
+  --dsg-cell-disabled-background-color: var(--muted);
+  color: var(--foreground);
+  font-size: 0.75rem;
+}
+
+.teacher-grid .dsg-cell-header {
+  background: var(--muted);
+  font-weight: 500;
+}
+
+.teacher-grid .dsg-input {
+  color: inherit;
+  font: inherit;
+}
+
+.semester-score-cell .dsg-input {
+  text-align: center;
+}
+
+.monthly-report-export {
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.monthly-report-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 210mm;
+  margin: 0 auto 1.5rem;
+}
+
+.monthly-report-document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.monthly-report-page {
+  box-sizing: border-box;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 10mm 12mm;
+  background: white;
+  color: #111827;
+  box-shadow: 0 1px 8px rgb(0 0 0 / 12%);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 8pt;
+  line-height: 1.25;
+}
+
+.report-header {
+  display: grid;
+  grid-template-columns: 18mm 1fr 18mm;
+  align-items: center;
+  min-height: 18mm;
+  padding-bottom: 2mm;
+  border-bottom: 1.5px solid #111827;
+  text-align: center;
+}
+
+.report-header img,
+.report-image-placeholder {
+  width: 16mm;
+  height: 16mm;
+  object-fit: contain;
+}
+
+.report-image-placeholder {
+  display: block;
+}
+
+.report-header .report-foundation-logo {
+  width: var(--report-foundation-logo-size, 16mm);
+  height: var(--report-foundation-logo-size, 16mm);
+  transform: translate(
+    var(--report-foundation-logo-x, 0),
+    var(--report-foundation-logo-y, 0)
+  );
+}
+
+.report-header .report-school-logo {
+  width: var(--report-school-logo-size, 16mm);
+  height: var(--report-school-logo-size, 16mm);
+  transform: translate(
+    var(--report-school-logo-x, 0),
+    var(--report-school-logo-y, 0)
+  );
+}
+
+.report-header h1 {
+  font-size: 18pt;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.report-header p {
+  margin-top: 1mm;
+  font-size: 7.5pt;
+}
+
+.monthly-report-page > h2 {
+  margin: 3mm 0 2mm;
+  font-size: 11pt;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.report-identity {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1mm 8mm;
+  margin-bottom: 2.5mm;
+}
+
+.report-identity > div {
+  display: grid;
+  grid-template-columns: 23mm 1fr;
+}
+
+.report-identity dd {
+  font-weight: 600;
+}
+
+.report-section {
+  margin-top: 2.5mm;
+  break-inside: avoid;
+}
+
+.report-section h3 {
+  margin-bottom: 1mm;
+  font-size: 9pt;
+  font-weight: 700;
+}
+
+.report-section table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.report-section th,
+.report-section td {
+  padding: 1mm 1.5mm;
+  border: 0.2mm solid #4b5563;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.report-section th {
+  background: #e5e7eb;
+  font-weight: 700;
+  text-align: left;
+}
+
+.report-section th:first-child,
+.report-section td:first-child {
+  width: 26%;
+}
+
+.report-section th:nth-child(2):nth-last-child(2),
+.report-section td:nth-child(2):nth-last-child(2) {
+  width: 17%;
+}
+
+.report-level-legend {
+  display: grid;
+  grid-template-columns: 27mm 1fr;
+  gap: 0.5mm 3mm;
+  margin: 1.5mm 0 0 1.5mm;
+  font-size: 7pt;
+  break-inside: avoid;
+}
+
+.report-level-legend strong {
+  grid-row: span 4;
+}
+
+.report-level-item {
+  display: grid;
+  grid-template-columns: 17mm 2mm 1fr;
+}
+
+.report-comment {
+  min-height: 12mm;
+  padding: 2mm;
+  border: 0.2mm solid #4b5563;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.report-signatures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--report-footer-gap, 25mm);
+  margin-top: var(--report-footer-top, 4mm);
+  padding-inline: var(--report-footer-inset, 0);
+  text-align: center;
+  break-inside: avoid;
+}
+
+.semester-report-identity {
+  grid-template-columns: 1fr;
+}
+
+.semester-report-page .semester-academic-section th:first-child,
+.semester-report-page .semester-academic-section td:first-child {
+  width: 23%;
+}
+
+.semester-report-page .semester-academic-section th:nth-child(2),
+.semester-report-page .semester-academic-section td:nth-child(2) {
+  width: 11%;
+  text-align: center;
+}
+
+.semester-report-page .semester-academic-section th:nth-child(3),
+.semester-report-page .semester-academic-section td:nth-child(3) {
+  width: 17%;
+  text-align: center;
+}
+
+.report-principal-signature {
+  position: relative;
+}
+
+.report-signature-image {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  height: 16mm;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-signature-image img {
+  object-fit: contain;
+}
+
+.report-homeroom-signature .report-signature-image img {
+  width: var(--report-homeroom-signature-size, 30mm);
+  height: calc(var(--report-homeroom-signature-size, 30mm) / 2);
+  transform: translate(
+    var(--report-homeroom-signature-x, 0),
+    var(--report-homeroom-signature-y, 0)
+  );
+}
+
+.report-principal-signature-content .report-signature-image img {
+  width: var(--report-principal-signature-size, 30mm);
+  height: calc(var(--report-principal-signature-size, 30mm) / 2);
+  transform: translate(
+    var(--report-principal-signature-x, 0),
+    var(--report-principal-signature-y, 0)
+  );
+}
+
+.report-signature strong,
+.report-signature small {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.report-stamp {
+  position: absolute;
+  z-index: 3;
+  bottom: -2mm;
+  left: 50%;
+  width: var(--report-stamp-size, 23mm);
+  height: var(--report-stamp-size, 23mm);
+  object-fit: contain;
+  opacity: 0.72;
+  transform: translate(
+    calc(-50% + var(--report-stamp-x, -7mm)),
+    var(--report-stamp-y, 0)
+  );
+}
+
+.tahsin-report-document {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.tahsin-report-page {
+  box-sizing: border-box;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 14mm 18mm;
+  background: white;
+  color: #111;
+  box-shadow: 0 1px 8px rgb(0 0 0 / 12%);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 10pt;
+  line-height: 1.35;
+}
+
+.tahsin-report-page > h1 {
+  margin-bottom: 8mm;
+  font-size: 14pt;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tahsin-report-section {
+  margin-top: 5mm;
+  break-inside: avoid;
+}
+
+.tahsin-report-section h2 {
+  margin-bottom: 2mm;
+  font-size: 10pt;
+  font-weight: 700;
+}
+
+.tahsin-identity-row,
+.tahsin-choice-row {
+  display: grid;
+  grid-template-columns: 52mm 4mm 1fr;
+  min-height: 5mm;
+}
+
+.tahsin-identity-row strong {
+  font-weight: 400;
+}
+
+.tahsin-choice {
+  margin-right: 3mm;
+  white-space: nowrap;
+}
+
+.tahsin-week-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.tahsin-week-table th,
+.tahsin-week-table td {
+  padding: 1.5mm 1mm;
+  border: 0.2mm solid #111;
+  vertical-align: middle;
+}
+
+.tahsin-week-table th {
+  font-weight: 700;
+}
+
+.tahsin-week-table th:first-child {
+  width: 10mm;
+}
+
+.tahsin-week-table th:nth-child(2) {
+  width: 43mm;
+}
+
+.tahsin-notes {
+  min-height: 27mm;
+  text-align: justify;
+  white-space: pre-wrap;
+}
+
+.tahsin-report-footer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: var(--report-footer-gap, 25mm);
+  margin-top: var(--report-footer-top, 4mm);
+  padding-inline: var(--report-footer-inset, 0);
+  break-inside: avoid;
+}
+
+.tahsin-report-footer .report-signature {
+  text-align: left;
+}
+
+.tahsin-report-footer .report-signature-image {
+  justify-content: flex-start;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+  [data-slot="sidebar"],
+  [data-slot="sidebar-gap"],
+  [data-slot="sidebar-inset"] > header,
+  [data-slot="sheet-content"],
+  [data-slot="sheet-overlay"],
+  .monthly-report-toolbar {
+    display: none !important;
+  }
+
+  html,
+  body,
+  [data-slot="sidebar-wrapper"],
+  [data-slot="sidebar-inset"] {
+    width: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+  }
+
+  .monthly-report-export {
+    padding: 0;
+  }
+
+  .monthly-report-document {
+    display: block;
+  }
+
+  .tahsin-report-document {
+    display: block;
+  }
+
+  .monthly-report-page {
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    break-after: page;
+    page-break-after: always;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .monthly-report-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .tahsin-report-page {
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    break-after: page;
+    page-break-after: always;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .tahsin-report-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
 }
